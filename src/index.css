@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.otp-input {
+  @apply w-full flex flex-row justify-around px-5;
+}
+.otp-input input {
+  width: 3rem !important;
+  @apply border border-[#04E68F] h-12 block rounded-2xl mt-5;
+}
