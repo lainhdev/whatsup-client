@@ -6,16 +6,14 @@ import {
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { findObj } from "../../utils/helper";
 import { FriendStatus } from "../../utils/types";
+import { setOpenFriendRequests } from "../../store/friend/friend.slice";
 
-const FriendRequests = ({
-  openFriendRequests,
-  setOpenFriendRequests,
-}: {
-  openFriendRequests: boolean;
-  setOpenFriendRequests: (param: boolean) => void;
-}) => {
+const FriendRequests = () => {
   const friends = useAppSelector((state) => state.friend.friends);
   const authUser = useAppSelector((state) => state.authUser);
+  const openFriendRequests = useAppSelector(
+    (state) => state.friend.openFriendRequests
+  );
 
   const dispatch = useAppDispatch();
 
@@ -46,7 +44,7 @@ const FriendRequests = ({
         <div className="flex flex-row justify-between px-5 pt-10 bg-[#04E68F]">
           <div className="flex flex-row items-center mb-5">
             <button
-              onClick={() => setOpenFriendRequests(false)}
+              onClick={() => dispatch(setOpenFriendRequests(false))}
               className="mr-5 cursor-pointer"
             >
               <img src="/icons/arrow-left-white.svg" width={25} height={25} />

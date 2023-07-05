@@ -16,7 +16,7 @@ const OTPScreen = ({
   const [otp, setOtp] = useState("");
   const [timer, setTimer] = useState(2);
   const [isResendedCode, setIsResendedCode] = useState(false);
-  const intervalRef = useRef(0);
+  const intervalRef = useRef();
 
   useEffect(() => {
     if (timer === 0) {
@@ -25,6 +25,8 @@ const OTPScreen = ({
   }, [timer]);
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     intervalRef.current = setInterval(() => {
       setTimer((seconds) => seconds - 1);
     }, 1000);

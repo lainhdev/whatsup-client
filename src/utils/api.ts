@@ -1,5 +1,14 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { Friend, SendFriendRequestDto, UpdateUserDto, User } from "./types";
+import {
+  Conversation,
+  CreateFirstMessageDto,
+  Friend,
+  Message,
+  SendFriendRequestDto,
+  UpdateUserDto,
+  LoadMoreMessagesDto,
+  User,
+} from "./types";
 
 const API_URL = import.meta.env.VITE_REACT_APP_API_SERVER_URL;
 
@@ -21,3 +30,16 @@ export const deleteFriend = (id: string) =>
 
 export const acceptFriend = (id: string) =>
   axiosClient.patch<Friend>(`/friend/${id}`, config);
+
+export const getConversations = () =>
+  axiosClient.get<Conversation[]>("/conversation", config);
+
+export const createFirstMessage = (params: CreateFirstMessageDto) =>
+  axiosClient.post<{ conversation: Conversation; message: Message }>(
+    "/message/firstMessage",
+    params,
+    config
+  );
+
+export const loadMoreMessages = (params: LoadMoreMessagesDto) =>
+  axiosClient.get<Message[]>("/message/loadMore", { params, ...config });

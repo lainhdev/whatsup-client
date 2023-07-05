@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { sendFriendRequestThunk } from "../../store/friend/friend.thunk";
 import { toast } from "react-toastify";
 
@@ -11,10 +11,34 @@ const NewFriend = ({
   setOpenNewFriend: (param: boolean) => void;
 }) => {
   const [email, setEmail] = useState("");
+  const authUser = useAppSelector((state) => state.authUser);
+  const friends = useAppSelector((state) => state.friend.friends);
 
   const dispatch = useAppDispatch();
+  const validateEmail = () => {
+    if (!email.length) {
+      toast.error("email must not be empty");
+      return false;
+    }
+    if (email === authUser.email) {
+      toast.error("can't enter your email");
+      return false;
+    }
+    for (let i = 0; i < friends.length; i++) {
+      if (
+        friends[i].receiver.email === email ||
+        friends[i].sender.email === email
+      ) {
+        toast.error("this friend has been added to your friend list");
+        return false;
+      }
+    }
+    return true;
+  };
 
   const handleSendRequest = async () => {
+    const isValid = validateEmail();
+    if (!isValid) return;
     const result = await dispatch(sendFriendRequestThunk({ email }));
     if (sendFriendRequestThunk.fulfilled.match(result)) {
       setOpenNewFriend(false);

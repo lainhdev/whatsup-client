@@ -1,23 +1,49 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Friend } from "../../utils/types";
+import { Friend, FriendStatus } from "../../utils/types";
 import {
   acceptFriendThunk,
-  deleteFriendThunk,
   getFriendsThunk,
   sendFriendRequestThunk,
 } from "./friend.thunk";
 
 type FriendState = {
   friends: Friend[];
+  openFriendContainer: boolean;
+  openFriendRequests: boolean;
 };
 const initialState: FriendState = {
   friends: [],
+  openFriendContainer: false,
+  openFriendRequests: false,
 };
 
 export const friend = createSlice({
   name: "friend",
   initialState,
-  reducers: {},
+  reducers: {
+    setOpenFriendContainer: (state, action) => {
+      state.openFriendContainer = action.payload;
+    },
+    setOpenFriendRequests: (state, action) => {
+      state.openFriendRequests = action.payload;
+    },
+    receivedFriendRequest: (state, action) => {
+      const newArr = state.friends.concat(action.payload);
+      state.friends = newArr;
+    },
+    friendAccepted: (state, action) => {
+      const newArr = state.friends;
+      const idx = newArr.findIndex((friend) => friend.id === action.payload.id);
+      newArr[idx].status = FriendStatus.ACCEPTED;
+      state.friends = newArr;
+    },
+    friendDeleted: (state, action) => {
+      const newArr = state.friends;
+      const idx = newArr.findIndex((friend) => friend.id === action.payload.id);
+      newArr.splice(idx, 1);
+      state.friends = newArr;
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(getFriendsThunk.fulfilled, (state, action) => {
       console.log("getFriendsThunk.fulfilled");
@@ -26,13 +52,6 @@ export const friend = createSlice({
     builder.addCase(sendFriendRequestThunk.fulfilled, (state, action) => {
       console.log("sendFriendRequestThunk.fulfilled");
       const newArr = state.friends.concat(action.payload);
-      state.friends = newArr;
-    });
-    builder.addCase(deleteFriendThunk.fulfilled, (state, action) => {
-      console.log("deleteFriendThunk.fulfilled");
-      const newArr = state.friends;
-      const idx = newArr.findIndex((friend) => friend.id === action.payload.id);
-      newArr.splice(idx, 1);
       state.friends = newArr;
     });
     builder.addCase(acceptFriendThunk.fulfilled, (state, action) => {
@@ -44,5 +63,13 @@ export const friend = createSlice({
     });
   },
 });
+
+export const {
+  setOpenFriendContainer,
+  receivedFriendRequest,
+  setOpenFriendRequests,
+  friendAccepted,
+  friendDeleted,
+} = friend.actions;
 
 export default friend.reducer;

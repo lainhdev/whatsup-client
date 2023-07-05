@@ -6,20 +6,26 @@ import { Friend, FriendStatus } from "../../utils/types";
 import { findObj } from "../../utils/helper";
 import { deleteFriendThunk } from "../../store/friend/friend.thunk";
 import { toast } from "react-toastify";
-import { setCurrentRoom, setIsOpenRoom } from "../../store/room/room.slice";
+import {
+  setCurrentConversation,
+  setIsOpenConversation,
+  setIsOpenNewConversation,
+  setNewConversation,
+} from "../../store/conversation/conversation.slice";
+import {
+  setOpenFriendContainer,
+  setOpenFriendRequests,
+} from "../../store/friend/friend.slice";
 
-const FriendsContainer = ({
-  openFriends,
-  setOpenFriends,
-}: {
-  openFriends: boolean;
-  setOpenFriends: (param: boolean) => void;
-}) => {
+const FriendsContainer = () => {
   const [openNewFriend, setOpenNewFriend] = useState(false);
-  const [openFriendRequests, setOpenFriendRequests] = useState(false);
 
   const friends = useAppSelector((state) => state.friend.friends);
   const authUser = useAppSelector((state) => state.authUser);
+  const conversationState = useAppSelector((state) => state.conversation);
+  const openFriendContainer = useAppSelector(
+    (state) => state.friend.openFriendContainer
+  );
 
   const dispatch = useAppDispatch();
 
@@ -34,14 +40,24 @@ const FriendsContainer = ({
 
   const handleOpenChat = (friend: Friend) => {
     console.log({ friend });
-    dispatch(setIsOpenRoom(true));
-    dispatch(setCurrentRoom(friend));
+    const idxConversation = conversationState.conversations.findIndex(
+      (conversation) => conversation.friendId === friend.id
+    );
+    if (idxConversation > -1) {
+      dispatch(setIsOpenConversation(true));
+      dispatch(
+        setCurrentConversation(conversationState.conversations[idxConversation])
+      );
+    } else {
+      dispatch(setIsOpenNewConversation(true));
+      dispatch(setNewConversation(friend));
+    }
   };
 
   return (
     <div
       className={`absolute left-0 bottom-0 h-screen max-w-lg w-screen bg-white z-30 ease-in-out duration-300 ${
-        openFriends ? "translate-x-0" : "translate-x-full"
+        openFriendContainer ? "translate-x-0" : "translate-x-full"
       }`}
     >
       <div className="w-full relative h-full max-w-xl mx-auto">
@@ -49,7 +65,7 @@ const FriendsContainer = ({
           <div className="flex flex-row items-center mb-5 justify-between w-full">
             <div className="flex flex-row items-center">
               <button
-                onClick={() => setOpenFriends(false)}
+                onClick={() => dispatch(setOpenFriendContainer(false))}
                 className="mr-5 cursor-pointer"
               >
                 <img src="/icons/arrow-left-white.svg" width={25} height={25} />
@@ -70,12 +86,14 @@ const FriendsContainer = ({
           </div>
           <div className="flex items-center flex-row font-medium my-3">
             <button
-              onClick={() => setOpenFriendRequests(true)}
+              onClick={() => dispatch(setOpenFriendRequests(true))}
               className="mr-3 p-3 bg-[#04E68F] rounded-full"
             >
               <img src="/icons/people-list.svg" className="w-6 h-6" />
             </button>
-            <p onClick={() => setOpenFriendRequests(true)}>Friend Requests</p>
+            <p onClick={() => dispatch(setOpenFriendRequests(true))}>
+              Friend Requests
+            </p>
           </div>
           {friends.length > 0 &&
             friends
@@ -117,10 +135,7 @@ const FriendsContainer = ({
         openNewFriend={openNewFriend}
         setOpenNewFriend={setOpenNewFriend}
       />
-      <FriendRequests
-        openFriendRequests={openFriendRequests}
-        setOpenFriendRequests={setOpenFriendRequests}
-      />
+      <FriendRequests />
     </div>
   );
 };
