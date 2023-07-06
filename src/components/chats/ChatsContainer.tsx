@@ -31,16 +31,19 @@ const ChatsContainer = () => {
               <div>
                 <p className="font-semibold">{obj.nickname}</p>
                 <p className="text-gray-500 text-sm">
-                  {conversation.lastMessage.text}
+                  {conversation.messages.length &&
+                    conversation.messages[0].text}
                 </p>
               </div>
             </div>
             <div className="text-center">
               <p className="text-sm text-gray-500">
-                {moment(conversation.lastMessage.createdAt).format("DD/MM/YY")}
+                {conversation.messages.length &&
+                  moment(conversation.messages[0].createdAt).format("DD/MM/YY")}
               </p>
               <p className="text-sm text-gray-500">
-                {moment(conversation.lastMessage.createdAt).format("hh:mm")}
+                {conversation.messages.length &&
+                  moment(conversation.messages[0].createdAt).format("hh:mm")}
               </p>
             </div>
           </div>
