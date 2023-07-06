@@ -37,6 +37,7 @@ const Conversation = () => {
       text,
     };
     socket.emit("sendMessage", params);
+    setText("");
   };
 
   const handleLoadMore = async () => {
