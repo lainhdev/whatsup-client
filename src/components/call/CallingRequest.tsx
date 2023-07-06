@@ -26,6 +26,7 @@ const CallingRequest = () => {
 
   const handleCancelCall = () => {
     socket.emit("cancelCall", obj.id);
+    dispatch(setIsCallingRequest(false));
   };
   const handleAcceptCall = () => {
     dispatch(setIsCallingRequest(false));
@@ -33,7 +34,7 @@ const CallingRequest = () => {
   };
   return (
     <div
-      className={`absolute left-0 bottom-0 h-screen max-w-lg w-screen bg-white z-60 ease-in-out duration-300 ${
+      className={`absolute left-0 bottom-0 h-screen max-w-lg w-screen bg-white z-[60] ease-in-out duration-300 ${
         conversationState.isCallingRequest
           ? "translate-x-0"
           : "translate-x-full"
